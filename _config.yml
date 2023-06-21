@@ -22,11 +22,17 @@ title: Connor's Personal Blog
 # email: your-email@example.com
 description: >- # this means to ignore newlines until "baseurl:"
  Join me as I share my learnings and insights about cyber security, software
- development and leadership in our modern world!
+ development, and personal and professional growth in our modern world!
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site
 # twitter_username: jekyllrb
 github_username:  cmooneycollett
+linkedin_username: Connor Mooney-Collett
+linkedin_url: https://www.linkedin.com/in/connor-mooney-collett
+
+# Google Analytics
+# google_analytics: UA-XXXXXXXXX-X
+
 
 collections:
   authors:
