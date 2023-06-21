@@ -28,11 +28,10 @@ url: "" # the base hostname & protocol for your site
 # twitter_username: jekyllrb
 github_username:  cmooneycollett
 linkedin_username: Connor Mooney-Collett
-linkedin_url: https://www.linkedin.com/in/connor-mooney-collett
+linkedin_url: http://www.linkedin.com/comm/mynetwork/discovery-see-all?usecase=PEOPLE_FOLLOWS&followMember=connor-mooney-collett
 
 # Google Analytics
 # google_analytics: UA-XXXXXXXXX-X
-
 
 collections:
   authors:
