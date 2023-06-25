@@ -11,7 +11,7 @@ permalink: /about/
 <table style="border: none;">
     <tr style="border: none;">
         <td align="center" style="border: none;">
-            <img src="/assets/images/connor_professional_profile.jpg" style="height:500px" alt="Professional profile photo of Connor Mooney-Collett" class="center">
+            <img src="/assets/images/connor_professional_profile.jpg" style="max-width:100%; max-height:100%;" alt="Professional profile photo of Connor Mooney-Collett" class="center">
         </td>
     </tr>
 </table>
