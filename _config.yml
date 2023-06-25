@@ -21,8 +21,8 @@
 title: Connor's Personal Blog
 # email: your-email@example.com
 description: >- # this means to ignore newlines until "baseurl:"
- Join me as I share my learnings and insights about cyber security, software
- development, and personal and professional growth in our modern world!
+ Join me as I share my insights and thoughts about cyber security, software
+ development, and personal and professional growth in our modern world.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site
 # twitter_username: jekyllrb
