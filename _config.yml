@@ -39,11 +39,18 @@ collections:
     output: true
 
 # Build settings
+markdown: kramdown
+highlighter: rouge
 theme: minima
 plugins:
   - jekyll-feed
   - jekyll-sitemap
   - jekyll-seo-tag
+
+# Markdown Processors
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
 
 # Exclude from processing.
 # The following items will not be processed, by default.
