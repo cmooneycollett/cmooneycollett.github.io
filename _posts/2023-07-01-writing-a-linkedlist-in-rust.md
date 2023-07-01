@@ -4,10 +4,7 @@ title: "Writing a Linked List in Rust: A Walkthrough"
 author: connor
 tags: rust data-structures deep-dive
 ---
-<!-- Ensure links open in a new tab when clicked -->
-<base target="_blank">
-
-While Rust already has a [`LinkedList`](https://doc.rust-lang.org/std/collections/struct.LinkedList.html) data structure in the standard library, making your own is a fun and interesting way to learn more about Rust.
+While Rust already has a [`LinkedList`](https://doc.rust-lang.org/std/collections/struct.LinkedList.html){:target="_blank"} data structure in the standard library, making your own is a fun and interesting way to learn more about Rust.
 
 By programming your own linked list in Rust, you'll learn more about Rust's language features, some foundational programming topics and how to work more peacefully alongside the infamous Rust *borrow checker*.
 
@@ -83,10 +80,10 @@ type Link<T> = Option<Rc<RefCell<Box<Node<T>>>>>;
 
 There is a lot packed into this single expression, so let's break down the parts from the inside out:
 - `Node<T>`: This is the `Node` that the `Link` connects the current `Node` to
-- [`Box<T>`](https://doc.rust-lang.org/std/boxed/struct.Box.html): Using boxes enables us to store the `Node` on the heap and store a pointer. The pointer is a constant size (which depends on your computer's architecture, e.g., 64-bit) and helps us to deal with the self-referential type issue.
-- [`RefCell<T>`](https://doc.rust-lang.org/std/cell/struct.RefCell.html): The `RefCell` type allows us to leverage the *interior mutability* design pattern provided by Rust. Since our `Node` is stored on the heap inside of a `Box`, we need the Rust borrowing rules to be enforced at runtime rather than compile time. By taking advantage of interior mutability, we can engage more flexibly with the Rust borrowing rules.
-- [`Rc<T>`](https://doc.rust-lang.org/std/rc/struct.Rc.html): In many cases with Rust, it is clear that each variable has a single owner. However, each `Node` will have multiple owners, including its previous and next node, and the overarching `LinkedList` itself for the head and tail nodes. In our case, we need to have a *reference-counted* pointer to keep track of our multiple owners and allow the Rust compiler to determine when to drop the variable when it no longer has any owners.
-- [`Option<T>`](https://doc.rust-lang.org/std/option/enum.Option.html): Since our `Node` may or may not have another `Node` before or after it, we need to represent this duality. In Rust, we achieve this *optional* state with the `Option` enum. If there is no link from a `Node`, the `prev` or `next` field for our `Node` will be the `None` variant of `Option`. Otherwise, the fields will be an instance of the `Some` variant containing a reference-counted pointer `Rc`.
+- [`Box<T>`](https://doc.rust-lang.org/std/boxed/struct.Box.html){:target="_blank"}: Using boxes enables us to store the `Node` on the heap and store a pointer. The pointer is a constant size (which depends on your computer's architecture, e.g., 64-bit) and helps us to deal with the self-referential type issue.
+- [`RefCell<T>`](https://doc.rust-lang.org/std/cell/struct.RefCell.html){:target="_blank"}: The `RefCell` type allows us to leverage the *interior mutability* design pattern provided by Rust. Since our `Node` is stored on the heap inside of a `Box`, we need the Rust borrowing rules to be enforced at runtime rather than compile time. By taking advantage of interior mutability, we can engage more flexibly with the Rust borrowing rules.
+- [`Rc<T>`](https://doc.rust-lang.org/std/rc/struct.Rc.html){:target="_blank"}: In many cases with Rust, it is clear that each variable has a single owner. However, each `Node` will have multiple owners, including its previous and next node, and the overarching `LinkedList` itself for the head and tail nodes. In our case, we need to have a *reference-counted* pointer to keep track of our multiple owners and allow the Rust compiler to determine when to drop the variable when it no longer has any owners.
+- [`Option<T>`](https://doc.rust-lang.org/std/option/enum.Option.html){:target="_blank"}: Since our `Node` may or may not have another `Node` before or after it, we need to represent this duality. In Rust, we achieve this *optional* state with the `Option` enum. If there is no link from a `Node`, the `prev` or `next` field for our `Node` will be the `None` variant of `Option`. Otherwise, the fields will be an instance of the `Some` variant containing a reference-counted pointer `Rc`.
 
 **Note that because our `Link` type uses `Rc` (referenced-counter pointer) instead of `Arc` (atomic referenced-counted pointer), our implementation of `Node` is not thread-safe.**
 
@@ -336,9 +333,9 @@ mod tests {
 ```
 
 ## Wrapping Up
-The full source code of my `LinkedList` implementation can be [found on my GitHub][my-source-file]. I've included some additional test methods and other features beyond what I've covered in this walkthrough, such as implementing iterator features for our `LinkedList`.
+The full source code of my `LinkedList` implementation can be [found on my GitHub][my-source-file]{:target="_blank"}. I've included some additional test methods and other features beyond what I've covered in this walkthrough, such as implementing iterator features for our `LinkedList`.
 
-Reach out to me on [LinkedIn][linkedin-url] or [GitHub][github-url] and let me know what you think!
+Reach out to me on [LinkedIn][linkedin-url]{:target="_blank"} or [GitHub][github-url]{:target="_blank"} and let me know what you think!
 
 [my-source-file]: https://github.com/cmooneycollett/ads-sandbox/blob/7ec4c3cc70c93ac4dc8d6c6cf0bd256563c5fdc9/src/data_structures/linkedlist.rs
 [linkedin-url]: http://www.linkedin.com/comm/mynetwork/discovery-see-all?usecase=PEOPLE_FOLLOWS&followMember=connor-mooney-collett
