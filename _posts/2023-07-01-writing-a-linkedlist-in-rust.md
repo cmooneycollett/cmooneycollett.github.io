@@ -3,7 +3,9 @@ layout: post
 title: "Writing a Linked List in Rust: A Walkthrough"
 author: connor
 tags: rust data-structures deep-dive
+image: /assets/article_images/2023-07-01-link-image.jpg
 ---
+
 While Rust already has a [`LinkedList`](https://doc.rust-lang.org/std/collections/struct.LinkedList.html){:target="_blank"} data structure in the standard library, making your own is a fun and interesting way to learn more about Rust.
 
 By programming your own linked list in Rust, you'll learn more about Rust's language features, some foundational programming topics and how to work more peacefully alongside the infamous Rust *borrow checker*.
