@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Writing a LinkedList in Rust
+title: "Writing a Linked List in Rust: A Walkthrough"
 author: connor
 tags: rust data-structures deep-dive
 ---
@@ -9,25 +9,21 @@ tags: rust data-structures deep-dive
 
 While Rust already has a [`LinkedList`](https://doc.rust-lang.org/std/collections/struct.LinkedList.html) data structure in the standard library, making your own is a fun and interesting way to learn more about Rust.
 
-By programming your own `LinkedList` in Rust, you'll learn more about Rust's language features, some foundational programming topics and how to work more peacefully alongside the infamous Rust *borrow checker*.
+By programming your own linked list in Rust, you'll learn more about Rust's language features, some foundational programming topics and how to work more peacefully alongside the infamous Rust *borrow checker*.
+
+I've struggled in the past to wrap my head around how the different features of Rust come together to make a linked list, but I've made a breakthrough in understanding that I am happy to share.
 
 Let's get started!
 
-- Generics
-- Smart pointers
-- Interior mutability
-- Borrow checker
-- Iterators
-
 ## The Problem
 
-For a quick recap, a `linkedlist` allows for data to be stored in nodes that point to other nodes in sequence. A doubly `linkedlist` has nodes that point to previous node and a next node.
+For a quick recap, a linked list allows for data to be stored in nodes that point to other nodes in sequence. A doubly linked list has nodes that point to the previous node and the next node.
 
-`list`-type data structures are typically stored in contiguous regions of memory that are resized to accomodate more elements as they grow in size. The reallocation and copying of `list` elements takes an increasing amount of time, growing in proportion to the size of the `list`. While adding elements to a `list` data structure runs with amortised constant time complexity, the periodic reallocation and copying may present as noticeable performance impacts at large sizes.
+List-type data structures are typically stored in contiguous regions of memory that are resized to accommodate more elements as they grow in size. The reallocation and copying of list elements take an increasing amount of time, growing in proportion to the size of the list. While adding elements to a list data structure runs with amortised constant time complexity, the periodic reallocation and copying may present noticeable performance impacts at large sizes.
 
-`linkedlist`-type data structures are typically stored in dynamically-allocated heap memory, with the nodes not necessarily stored in a particular order. Adding and removing items from a `linkedlist` will always be a constant time operation without the additional overhead of reallocating and copying its elements into larger sections of memory.
+Linked-list-type data structures are typically stored in dynamically-allocated heap memory, with the nodes not necessarily stored in a particular order. Adding and removing items from a linked list will always be a constant time operation without the additional overhead of reallocating and copying its elements into larger sections of memory.
 
-These useful properties of the `linkedlist` allow it to use used to model queues and stacks of objects or data items in programming problems. You'll be happy you dove down this rabbit hole!
+These useful properties of the linked list allow it to be used in modeling queues and stacks of objects or data items in programming problems. You'll be happy you dove down this rabbit hole!
 
 ## The Approach
 
@@ -35,13 +31,13 @@ To approach this problem in Rust, we will need two data structures:
 - A `Node<T>` to store a single data item of generic type `T`
 - A `LinkedList<T>` to store a sequence of data items of generic type `T`
 
-Implementing these operations for our `LinkedList<T>` will provide some of the basic functionality we need:
+Implementing these operations for our `LinkedList` will provide some of the basic functionality we need:
 - Create a new empty list
 - Push data items to the front or back of the list
 - Pop data items from the front or back of the list
 - Calculate the length of the list
 
-To balance the potential complexity of our `LinkedList<T>`, our implementation won't cover these operations:
+To balance the potential complexity of our `LinkedList`, our implementation won't cover these operations:
 - Modify data items after they've been added to the list
 - Add data items between nodes
 
@@ -64,7 +60,7 @@ By storing our data item in a referenced-countered pointer (`Rc`), there is no n
 
 ### Link
 
-Rust needs to know the size of structs at compile-time, which causes some issues for self-referrencing data type. If we used, we get a compiler error message like the below:
+Rust needs to know the size of structs at compile-time, which causes some issues for self-referencing data type. If we set the type of the `prev` and `next` fields to be `Node<T>`, we get a compiler error message like the below:
 
 ```
 error[E0072]: recursive type `Node` has infinite size
@@ -79,27 +75,27 @@ error[E0072]: recursive type `Node` has infinite size
 
 The compiler error message is giving us a hint for how to proceed. We are being nudged towards using *indirection*, which is another way to talk about pointers.
 
-To deal with this compiler error, we need to provide some kind of pointer in place of direct copy of a `Node`. We can define a custom type `Link<T>` as an *indirect* wrapper for our `Node`:
+To deal with this compiler error, we need to provide some kind of pointer in place of a direct copy of a `Node`. We can define a custom type `Link<T>` as an *indirect* wrapper for our `Node`:
 
 ```rs
 type Link<T> = Option<Rc<RefCell<Box<Node<T>>>>>;
 ```
 
-There is a lot packed into this single expression, so let's break down the parts from inside-out:
+There is a lot packed into this single expression, so let's break down the parts from the inside out:
 - `Node<T>`: This is the `Node` that the `Link` connects the current `Node` to
-- [`Box<T>`](https://doc.rust-lang.org/std/boxed/struct.Box.html): Using boxes enables us to store the `Node<T>` on the heap and store a pointer. The pointer is a constant size (which depends on your computer's architecture, e.g., 64-bit) and helps us to deal with the self-referential type issue.
-- [`RefCell<T>`](https://doc.rust-lang.org/std/cell/struct.RefCell.html): The `RefCell<T>` type allows us to leverage the *interior mutability* design pattern provided by Rust. Since our `Node<T>` is stored on the heap inside of a `Box`, we need to the Rust borrowing rules to be enforced at runtime rather than compile time. By taking advantage of iterior mutability, we can engage more flexibly with the Rust borrowing rules.
+- [`Box<T>`](https://doc.rust-lang.org/std/boxed/struct.Box.html): Using boxes enables us to store the `Node` on the heap and store a pointer. The pointer is a constant size (which depends on your computer's architecture, e.g., 64-bit) and helps us to deal with the self-referential type issue.
+- [`RefCell<T>`](https://doc.rust-lang.org/std/cell/struct.RefCell.html): The `RefCell` type allows us to leverage the *interior mutability* design pattern provided by Rust. Since our `Node` is stored on the heap inside of a `Box`, we need the Rust borrowing rules to be enforced at runtime rather than compile time. By taking advantage of interior mutability, we can engage more flexibly with the Rust borrowing rules.
 - [`Rc<T>`](https://doc.rust-lang.org/std/rc/struct.Rc.html): In many cases with Rust, it is clear that each variable has a single owner. However, each `Node` will have multiple owners, including its previous and next node, and the overarching `LinkedList` itself for the head and tail nodes. In our case, we need to have a *reference-counted* pointer to keep track of our multiple owners and allow the Rust compiler to determine when to drop the variable when it no longer has any owners.
-- [`Option<T>`](https://doc.rust-lang.org/std/option/enum.Option.html): Since our `Node` may or may not have another `Node` before or after it, we need to represent this duality. In Rust, we achieve this *optional* state with the `Option<T>` enum. If there is no link from a `Node`, the `prev` or `next` field for our `Node` will be the `None` variant of `Option<T>`. Otherwise, the fields will be an instance of the `Some()` variant containing a reference-counted pointer `Rc<T>`.
+- [`Option<T>`](https://doc.rust-lang.org/std/option/enum.Option.html): Since our `Node` may or may not have another `Node` before or after it, we need to represent this duality. In Rust, we achieve this *optional* state with the `Option` enum. If there is no link from a `Node`, the `prev` or `next` field for our `Node` will be the `None` variant of `Option`. Otherwise, the fields will be an instance of the `Some` variant containing a reference-counted pointer `Rc`.
 
-**Note that because our `Link<T>` type uses `Rc` (referenced-counter pointer) instead of `Arc` (atomic referenced-counted pointer), our implementation of `Node` is not thread-safe.**
+**Note that because our `Link` type uses `Rc` (referenced-counter pointer) instead of `Arc` (atomic referenced-counted pointer), our implementation of `Node` is not thread-safe.**
 
 ### Node constructor
 
 Each of our `Node` methods will be enclosed in a block: `impl<T> Node<T> { ... }`
 This allows our methods to take data items of the generic type `T`, making our `Node` quite flexible!
 
-Now that he know how our `Node` will link to others, we can implement the `new()` method. Each `Node` will start out holding as a data item of the generic type `T` and not connected to a previous or next `Node`.
+Now that we know how our `Node` will link to others, we can implement the `new()` method. Each `Node` will start out holding as a data item of the generic type `T` and not connected to a previous or next `Node`.
 
 ```rs
 /// Creates a new Node containing the given data item. The previous and next
@@ -115,7 +111,7 @@ fn new(data: T) -> Node<T> {
 
 ### Node setters
 
-Our methods for updating the previous and next nodes will be fairly straightforward. Using our referenced-counted `Link<T>`, we only need to clone the other link when using our setting methods. The logic to ensure two nodes next to each other are pointing at each other correctly will be handed by our `LinkedList`.
+Our methods for updating the previous and next nodes will be fairly straightforward. Using our referenced-counted `Link`, we only need to clone the other link when using our setting methods. The logic to ensure two nodes next to each other are pointing at each other correctly will be handled by our `LinkedList`.
 
 ```rs
 /// Updates the previous node.
@@ -145,16 +141,9 @@ fn get_next(&self) -> Link<T> {
 }
 ```
 
-In order to get the data stored by our `Node` without needing to clone or copy the data, we can return a clone of the referenced-counted pointer to it.
+To get the data stored by our `Node` without needing to clone or copy the data, we can return a clone of the referenced-counted pointer to it.
 
-```rs
-/// Gets the data item contained within the Node via cloning.
-fn get_data(&self) -> Rc<T> {
-    self.data.clone()
-}
-```
-
-As a convience for our `LinkedList` implemention to come, we will define a static method to create a new `Link<T>` from a data item `T`:
+As a convenience for our `LinkedList` implementation to come, we will define a static method to create a new `Link` from a data item `T`:
 
 ```rs
 /// Creates a new Link containing the given data item.
@@ -163,11 +152,11 @@ fn new_link(data: T) -> Link<T> {
 }
 ```
 
-With our `Node` struct and its methods implemented, we can move onto our `LinkedList` implementation.
+With our `Node` struct and its methods implemented, we can move on to our `LinkedList`` implementation.
 
 ## Linking the nodes together: LinkedList
 
-Our `LinkedList` needs to keep track of its first and last nodes (the *head* and *tail* nodes) and its length.
+Our `LinkedList` needs to keep track of its first and last nodes (the *head* and *tail* nodes), and its length.
 
 ```rs
 /// An implementation of a doubly linked-list. Not thread-safe. Note that the
@@ -205,7 +194,7 @@ Our `LinkedList` push methods are where this project starts to get really fun! B
 
 To push a new node to the end of the list, we first create another `Node` containing the new data item. If the `LinkedList` is empty, the new `Node` becomes the new head and tail. Otherwise, the new node becomes the new tail. The last part of our `push()` method ensures that the old tail and the new tail point to each other and the `LinkedList` is tracking the new tail.
 
-The `as_ref()` method called on our the `Link` instances allows us to borrow the `Rc` held within the `Option` instance, rather than taking ownership of it. With the `Rc` borrowed, we can dynamically borrow the `Node` contained within the `Link` via the `borrow_mut()` method called on the `RefCell` nested within the `Link`.
+The `as_ref()` method called on our `Link` instances allows us to borrow the `Rc` held within the `Option` instance, rather than taking ownership of it. With the `Rc` borrowed, we can dynamically borrow the `Node` contained within the `Link` via the `borrow_mut()` method called on the `RefCell` nested within the `Link`.
 
 ```rs
 /// Pushes the data item to the end of the LinkedList.
@@ -295,7 +284,7 @@ pub fn pop_front(&mut self) -> Option<Rc<T>> {
 
 ### Checking length
 
-Checking the length of our `LinkedList` is very straightforward now, since we have been keeping track the nodes as they are pushed and popped.
+Checking the length of our `LinkedList` is very straightforward now since we have been keeping track of the nodes as they are pushed and popped.
 
 ```rs
 /// Returns the number of items contained in the LinkedList.
@@ -317,7 +306,7 @@ pub fn is_empty(&self) -> bool {
 
 It is good practice to write and use test cases for your code. That way you know if your implementation is behaving as expected and have a head's up if something has broken through changes to your code.
 
-Below are some example test methods we can use to check various parts the functionality of our `LinkedList`. These test methods are by no means exclusive - feel free to write more test cases yourself. You can execute the test methods using the `cargo test` command.
+Below are some example test methods we can use to check various parts of the functionality of our `LinkedList`. These test methods are by no means exclusive - feel free to write more test cases yourself. You can execute the test methods using the `cargo test` command.
 
 ```rs
 #[cfg(test)]
@@ -347,9 +336,10 @@ mod tests {
 ```
 
 ## Wrapping Up
+The full source code of my `LinkedList` implementation can be [found on my GitHub][my-source-file]. I've included some additional test methods and other features beyond what I've covered in this walkthrough, such as implementing iterator features for our `LinkedList`.
 
-The full source-code of my `LinkedList` implementation can be [found on my GitHub][my-source-file]. I've included some additional test methods and other features beyond what I've covered in this walkthrough, such as implementing iterator features for our `LinkedList`.
-
-Reach out to me on LinkedIn or GitHub and let me know what you think!
+Reach out to me on [LinkedIn][linkedin-url] or [GitHub][github-url] and let me know what you think!
 
 [my-source-file]: https://github.com/cmooneycollett/ads-sandbox/blob/7ec4c3cc70c93ac4dc8d6c6cf0bd256563c5fdc9/src/data_structures/linkedlist.rs
+[linkedin-url]: http://www.linkedin.com/comm/mynetwork/discovery-see-all?usecase=PEOPLE_FOLLOWS&followMember=connor-mooney-collett
+[github-url]: https://github.com/cmooneycollett/cmooneycollett.github.io
