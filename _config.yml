@@ -34,6 +34,8 @@ linkedin_url: http://www.linkedin.com/comm/mynetwork/discovery-see-all?usecase=P
 # Google Analytics
 # google_analytics: UA-XXXXXXXXX-X
 
+permalink: /:categories/:year/:month/:day/:title
+
 collections:
   authors:
     output: true
