@@ -17,7 +17,7 @@ We use your Personal Information to respond to your inquiries, provide you with 
 3. <b>Website Analytics</b><br/>
 To analyse the usage of our Website and improve its functionality, we use Google Analytics, a web analytics service provided by Google LLC ("Google"). Google Analytics uses cookies to collect information about your usage of the Website, including your IP address, which is anonymised to ensure your privacy. This information is transmitted to and stored by Google on servers in the United States. Google may use this information to evaluate your use of the Website, compile reports on website activity for us, and provide other services relating to website activity and internet usage. Google may also transfer this information to third parties where required to do so by law or where such third parties process the information on Google's behalf. By using our Website, you consent to the processing of data about you by Google in the manner and for the purposes set out above.
 
-4. <b>Form Submission</b></br>
+4. <b>Form Submission</b><br/>
 To provide data capture forms and receive contact requests, we use FormKeep. The information collected by FormKeep may include your name, email address, IP address and other contact information. The FormKeep privacy policy can be found [here](https://formkeep.com/privacy).
 
 5. <b>Third-Party Websites</b><br/>
