@@ -19,6 +19,7 @@
 # in the templates via {{ site.myvariable }}.
 
 title: Connor's Personal Blog
+author: Connor Mooney-Collett
 # email: your-email@example.com
 description: >- # this means to ignore newlines until "baseurl:"
  Join me as I share my insights and thoughts about cyber security, software
