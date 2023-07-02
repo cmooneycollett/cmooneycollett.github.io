@@ -2,11 +2,6 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  {% if page.image %}
-    <meta property="og:image" content="{{page.image}}">
-  {% else %}
-    <meta property="og:image" content="/assets/images/connor_professional_profile_crop.jpg">
-  {% endif %}
   {%- seo -%}
   <link rel="stylesheet" href="{{ "/assets/main.css" | relative_url }}">
   <link rel="shortcut icon" type="image/png" href="{{ "/favicon.png" | prepend: site.baseurl }}" >
@@ -17,4 +12,6 @@
   {% if site.tags != "" %}
     {% include collecttags.html %}
   {% endif %}
+  <!-- Social meta tags to improve social media sharing and SEO -->
+  {% include social-metatags.html %} 
 </head>

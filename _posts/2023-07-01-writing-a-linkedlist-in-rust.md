@@ -3,14 +3,14 @@ layout: post
 title: "Writing a Linked List in Rust: A Walkthrough"
 author: connor
 tags: rust data-structures deep-dive
-image: /assets/images/post_images/2023-07-01-link-image.jpg
+page_image: /assets/images/post_images/2023-07-01-link-image.jpg
 ---
 
 While Rust already has a [`LinkedList`](https://doc.rust-lang.org/std/collections/struct.LinkedList.html){:target="_blank"} data structure in the standard library, making your own is a fun and interesting way to learn more about Rust.
 
 By programming your own linked list in Rust, you'll learn more about Rust's language features, some foundational programming topics and how to work more peacefully alongside the infamous Rust *borrow checker*.
 
-I've struggled in the past to wrap my head around how the different features of Rust come together to make a linked list, but I've made a breakthrough in understanding that I am happy to share.
+I've struggled in the past to wrap my head around how the different features of Rust come together to make a linked list, but I've made a breakthrough in understanding that I'm happy to share.
 
 Let's get started!
 
@@ -26,7 +26,7 @@ These useful properties of the linked list allow it to be used in modeling queue
 
 ## The Approach
 
-To approach this problem in Rust, we will need two data structures:
+To approach this problem in Rust, we'll need two data structures:
 - A `Node<T>` to store a single data item of generic type `T`
 - A `LinkedList<T>` to store a sequence of data items of generic type `T`
 
@@ -55,11 +55,11 @@ struct Node<T> {
 }
 ```
 
-By storing our data item in a referenced-countered pointer (`Rc`), there is no need to clone or copy the data when creating a new node.
+By storing our data item in a referenced-countered pointer (`Rc`), there isn't a need to clone or copy the data when creating a new node.
 
 ### Link
 
-Rust needs to know the size of structs at compile-time, which causes some issues for self-referencing data type. If we set the type of the `prev` and `next` fields to be `Node<T>`, we get a compiler error message like the below:
+Rust needs to know the size of structs at compile-time, which causes some issues for self-referencing data types. If we set the type of the `prev` and `next` fields to be `Node<T>`, we get a compiler error message like the below:
 
 ```
 error[E0072]: recursive type `Node` has infinite size
@@ -80,12 +80,12 @@ To deal with this compiler error, we need to provide some kind of pointer in pla
 type Link<T> = Option<Rc<RefCell<Box<Node<T>>>>>;
 ```
 
-There is a lot packed into this single expression, so let's break down the parts from the inside out:
+There is a lot packed into this single expression, so let's break it down:
 - `Node<T>`: This is the `Node` that the `Link` connects the current `Node` to
-- [`Box<T>`](https://doc.rust-lang.org/std/boxed/struct.Box.html){:target="_blank"}: Using boxes enables us to store the `Node` on the heap and store a pointer. The pointer is a constant size (which depends on your computer's architecture, e.g., 64-bit) and helps us to deal with the self-referential type issue.
+- [`Box<T>`](https://doc.rust-lang.org/std/boxed/struct.Box.html){:target="_blank"}: Using boxes enables us to store the `Node` on the heap and store a pointer. The pointer is a constant size (which depends on your computer's architecture, e.g., 64-bit) and helps us to deal with the self-referential type issue by using indirection.
 - [`RefCell<T>`](https://doc.rust-lang.org/std/cell/struct.RefCell.html){:target="_blank"}: The `RefCell` type allows us to leverage the *interior mutability* design pattern provided by Rust. Since our `Node` is stored on the heap inside of a `Box`, we need the Rust borrowing rules to be enforced at runtime rather than compile time. By taking advantage of interior mutability, we can engage more flexibly with the Rust borrowing rules.
-- [`Rc<T>`](https://doc.rust-lang.org/std/rc/struct.Rc.html){:target="_blank"}: In many cases with Rust, it is clear that each variable has a single owner. However, each `Node` will have multiple owners, including its previous and next node, and the overarching `LinkedList` itself for the head and tail nodes. In our case, we need to have a *reference-counted* pointer to keep track of our multiple owners and allow the Rust compiler to determine when to drop the variable when it no longer has any owners.
-- [`Option<T>`](https://doc.rust-lang.org/std/option/enum.Option.html){:target="_blank"}: Since our `Node` may or may not have another `Node` before or after it, we need to represent this duality. In Rust, we achieve this *optional* state with the `Option` enum. If there is no link from a `Node`, the `prev` or `next` field for our `Node` will be the `None` variant of `Option`. Otherwise, the fields will be an instance of the `Some` variant containing a reference-counted pointer `Rc`.
+- [`Rc<T>`](https://doc.rust-lang.org/std/rc/struct.Rc.html){:target="_blank"}: In many cases with Rust, it's clear that each variable has a single owner. However, each `Node` will have multiple owners, including its previous and next node, and the overarching `LinkedList` itself for the head and tail nodes. In our case, we need to have a *reference-counted* pointer to keep track of our multiple owners and allow the Rust compiler to determine when to drop the variable when it no longer has any owners.
+- [`Option<T>`](https://doc.rust-lang.org/std/option/enum.Option.html){:target="_blank"}: Since our `Node` may or may not have another `Node` before or after it, we need to represent this duality. In Rust, we achieve this *optional* state with the `Option` enum. If there isn't a link from a `Node`, the `prev` or `next` field for our `Node` will be the `None` variant of `Option`. Otherwise, the fields will be an instance of the `Some` variant containing a reference-counted pointer `Rc`.
 
 **Note that because our `Link` type uses `Rc` (referenced-counter pointer) instead of `Arc` (atomic referenced-counted pointer), our implementation of `Node` is not thread-safe.**
 
@@ -151,7 +151,7 @@ fn new_link(data: T) -> Link<T> {
 }
 ```
 
-With our `Node` struct and its methods implemented, we can move on to our `LinkedList`` implementation.
+With our `Node` struct and its methods implemented, we can move on to our `LinkedList` implementation.
 
 ## Linking the nodes together: LinkedList
 
@@ -189,7 +189,9 @@ pub fn new() -> LinkedList<T> {
 
 ### Push methods
 
-Our `LinkedList` push methods are where this project starts to get really fun! By convention, "push" by itself means pushing to the end of the `LinkedList` and "pushing to the front" means exactly that.
+Our `LinkedList` push methods are where this project starts to get really fun!
+
+By convention, "push" by itself means pushing to the end of the `LinkedList` and "pushing to the front" means exactly that.
 
 To push a new node to the end of the list, we first create another `Node` containing the new data item. If the `LinkedList` is empty, the new `Node` becomes the new head and tail. Otherwise, the new node becomes the new tail. The last part of our `push()` method ensures that the old tail and the new tail point to each other and the `LinkedList` is tracking the new tail.
 
@@ -336,6 +338,8 @@ mod tests {
 
 ## Wrapping Up
 The full source code of my `LinkedList` implementation can be [found on my GitHub][my-source-file]{:target="_blank"}. I've included some additional test methods and other features beyond what I've covered in this walkthrough, such as implementing iterator features for our `LinkedList`.
+
+Feel free to take this walkthrough as a starting point and extend it further!
 
 Reach out to me on [LinkedIn][linkedin-url]{:target="_blank"} or [GitHub][github-url]{:target="_blank"} and let me know what you think!
 
