@@ -359,8 +359,9 @@ Reach out to me on [LinkedIn][linkedin-url]{:target="_blank"} or [GitHub][github
 
 ## Errata
 
-- *18 July 2023: I updated the pop() and pop_front() methods discussed in this article to fix a bug highlighted through [community feedback on GitHub](https://github.com/cmooneycollett/ads-sandbox/issues/5){:target="_blank"}.*
+- *18 July 2023: I updated the pop() and pop_front() methods discussed in this article to fix a bug highlighted through [community feedback on GitHub][ads-sandbox-issue-5]{:target="_blank"}.*
 
 [my-source-file]: https://github.com/cmooneycollett/ads-sandbox/blob/e770fa903c896deae60e029d86f756d00a27066a/src/data_structures/linkedlist.rs
 [linkedin-url]: http://www.linkedin.com/comm/mynetwork/discovery-see-all?usecase=PEOPLE_FOLLOWS&followMember=connor-mooney-collett
 [github-url]: https://github.com/cmooneycollett/cmooneycollett.github.io
+[ads-sandbox-issue-5]: https://github.com/cmooneycollett/ads-sandbox/issues/5
