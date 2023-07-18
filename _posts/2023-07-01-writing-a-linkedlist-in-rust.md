@@ -243,6 +243,8 @@ The value we get from popping a data item from our `LinkedList` depends on wheth
 
 If our `LinkedList` contains at least one `Node`, our `pop()` method will return the value contained in the removed node wrapped in a `Some` from the `Option`. Otherwise, it will return a `None` value indicating that no `Node` was removed.
 
+The case where the `LinkedList` has only one item needs to be handled to avoid panicking by attempting to call a method on a `None` value.
+
 ```rs
 /// Removes the last node from the LinkedList. Returns Some containing the value
 /// from the removed node, otherwise None.
@@ -253,9 +255,15 @@ pub fn pop(&mut self) -> Option<Rc<T>> {
     }
     // Update the tail to be the second-last node and return value contained in removed node
     let old_tail = self.tail.clone();
-    self.tail = old_tail.as_ref().unwrap().borrow().get_prev();
-    self.tail.as_ref().unwrap().borrow_mut().set_next(&None);
     let old_data = old_tail.as_ref().unwrap().borrow().get_data();
+    // Update head and tail
+    if self.len() == 1 {
+        self.head = None;
+        self.tail = None;
+    } else {
+        self.tail = old_tail.as_ref().unwrap().borrow().get_prev();
+        self.tail.as_ref().unwrap().borrow_mut().set_next(&None);
+    }
     // Decrease the len counter
     self.len -= 1;
     Some(old_data)
@@ -274,9 +282,15 @@ pub fn pop_front(&mut self) -> Option<Rc<T>> {
     }
     // Update head to be second node and return value contained in removed node
     let old_head = self.head.clone();
-    self.head = old_head.as_ref().unwrap().borrow().get_next();
-    self.head.as_ref().unwrap().borrow_mut().set_prev(&None);
     let old_data = old_head.as_ref().unwrap().borrow().get_data();
+    // Update head and tail
+    if self.len == 1 {
+        self.head = None;
+        self.tail = None;
+    } else {
+        self.head = old_head.as_ref().unwrap().borrow().get_next();
+        self.head.as_ref().unwrap().borrow_mut().set_prev(&None);
+    }
     // Decrease the len counter
     self.len -= 1;
     Some(old_data)
@@ -343,6 +357,10 @@ Feel free to take this walkthrough as a starting point and extend it further!
 
 Reach out to me on [LinkedIn][linkedin-url]{:target="_blank"} or [GitHub][github-url]{:target="_blank"} and let me know what you think!
 
-[my-source-file]: https://github.com/cmooneycollett/ads-sandbox/blob/7ec4c3cc70c93ac4dc8d6c6cf0bd256563c5fdc9/src/data_structures/linkedlist.rs
+## Errata
+
+- *18 July 2023: I updated the pop() and pop_front() methods discussed in this article to fix a bug highlighted through [community feedback on GitHub](https://github.com/cmooneycollett/ads-sandbox/issues/5).*
+
+[my-source-file]: https://github.com/cmooneycollett/ads-sandbox/blob/e770fa903c896deae60e029d86f756d00a27066a/src/data_structures/linkedlist.rs
 [linkedin-url]: http://www.linkedin.com/comm/mynetwork/discovery-see-all?usecase=PEOPLE_FOLLOWS&followMember=connor-mooney-collett
 [github-url]: https://github.com/cmooneycollett/cmooneycollett.github.io
