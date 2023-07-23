@@ -78,7 +78,7 @@ It is important to note that the impact of a cyber attack in first-order and hig
 ### Tiers of Impact
 - **High:** High-impact threat actors are those that can cause widespread harm and disruption. They may use advanced tactics such as zero-day exploits or malware that is difficult to detect and mitigate. The impact of a successful attack from a high-impact threat actor could be devastating, potentially leading to financial loss, reputational damage, or even physical harm.
 - **Medium:** Medium-impact threat actors are less capable than high-impact actors but still pose a significant risk. The impact of a successful attack from a medium-impact threat actor could still result in significant financial loss but is less likely to cause widespread harm.
-- **High:** Low-impact threat actors are those that have limited capability and resources. The impact of a successful attack from a low-impact actor is likely to be relatively small but can still result in inconvenience or financial loss for the victims.
+- **Low:** Low-impact threat actors are those that have limited capability and resources. The impact of a successful attack from a low-impact actor is likely to be relatively small but can still result in inconvenience or financial loss for the victims.
 
 ## Tenacity
 
