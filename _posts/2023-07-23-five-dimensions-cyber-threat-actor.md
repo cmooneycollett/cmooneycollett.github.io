@@ -2,7 +2,7 @@
 layout: post
 title: "Five Dimensions of Cyber Threat Actor Behaviour"
 author: connor
-tags: cyber-security
+tags: cyber-security frameworks
 image: /assets/images/post_images/2023-07-23-link-image.jpg
 ---
 
