@@ -20,7 +20,7 @@ For a quick recap, a linked list allows for data to be stored in nodes that poin
 
 List-type data structures are typically stored in contiguous regions of memory that are resized to accommodate more elements as they grow in size. The reallocation and copying of list elements take an increasing amount of time, growing in proportion to the size of the list. While adding elements to a list data structure runs with amortised constant time complexity, the periodic reallocation and copying may present noticeable performance impacts at large sizes.
 
-Linked-list-type data structures are typically stored in dynamically-allocated heap memory, with the nodes not necessarily stored in a particular order. Adding and removing items from a linked list will always be a constant time operation without the additional overhead of reallocating and copying its elements into larger sections of memory.
+Linked-list-type data structures are typically stored in dynamically allocated heap memory, with the nodes not necessarily stored in a particular order. Adding and removing items from a linked list will always be a constant time operation without the additional overhead of reallocating and copying its elements into larger sections of memory.
 
 These useful properties of the linked list allow it to be used in modeling queues and stacks of objects or data items in programming problems. You'll be happy you dove down this rabbit hole!
 
@@ -40,7 +40,7 @@ To balance the potential complexity of our `LinkedList`, our implementation won'
 - Modify data items after they've been added to the list
 - Add data items between nodes
 
-These limitations are great opportunities for you to take what we are implemented and extend it further yourselves.
+These limitations are great opportunities for you to take what we are implementing and extend it further yourselves.
 
 ## Storing the data: Node
 
@@ -77,13 +77,12 @@ The compiler error message is giving us a hint for how to proceed. We are being 
 To deal with this compiler error, we need to provide some kind of pointer in place of a direct copy of a `Node`. We can define a custom type `Link<T>` as an *indirect* wrapper for our `Node`:
 
 ```rs
-type Link<T> = Option<Rc<RefCell<Box<Node<T>>>>>;
+type Link<T> = Option<Rc<RefCell<Node<T>>>>;
 ```
 
 There is a lot packed into this single expression, so let's break it down:
 - `Node<T>`: This is the `Node` that the `Link` connects the current `Node` to
-- [`Box<T>`](https://doc.rust-lang.org/std/boxed/struct.Box.html){:target="_blank"}: Using boxes enables us to store the `Node` on the heap and store a pointer. The pointer is a constant size (which depends on your computer's architecture, e.g., 64-bit) and helps us to deal with the self-referential type issue by using indirection.
-- [`RefCell<T>`](https://doc.rust-lang.org/std/cell/struct.RefCell.html){:target="_blank"}: The `RefCell` type allows us to leverage the *interior mutability* design pattern provided by Rust. Since our `Node` is stored on the heap inside of a `Box`, we need the Rust borrowing rules to be enforced at runtime rather than compile time. By taking advantage of interior mutability, we can engage more flexibly with the Rust borrowing rules.
+- [`RefCell<T>`](https://doc.rust-lang.org/std/cell/struct.RefCell.html){:target="_blank"}: The `RefCell` type allows us to leverage the *interior mutability* design pattern provided by Rust. Since our `Node` is stored on the heap inside of the `RefCell`, we need the Rust borrowing rules to be enforced at runtime rather than compile time. By taking advantage of interior mutability, we can engage more flexibly with the Rust borrowing rules.
 - [`Rc<T>`](https://doc.rust-lang.org/std/rc/struct.Rc.html){:target="_blank"}: In many cases with Rust, it's clear that each variable has a single owner. However, each `Node` will have multiple owners, including its previous and next node, and the overarching `LinkedList` itself for the head and tail nodes. In our case, we need to have a *reference-counted* pointer to keep track of our multiple owners and allow the Rust compiler to determine when to drop the variable when it no longer has any owners.
 - [`Option<T>`](https://doc.rust-lang.org/std/option/enum.Option.html){:target="_blank"}: Since our `Node` may or may not have another `Node` before or after it, we need to represent this duality. In Rust, we achieve this *optional* state with the `Option` enum. If there isn't a link from a `Node`, the `prev` or `next` field for our `Node` will be the `None` variant of `Option`. Otherwise, the fields will be an instance of the `Some` variant containing a reference-counted pointer `Rc`.
 
@@ -142,12 +141,12 @@ fn get_next(&self) -> Link<T> {
 
 To get the data stored by our `Node` without needing to clone or copy the data, we can return a clone of the referenced-counted pointer to it.
 
-As a convenience for our `LinkedList` implementation to come, we will define a static method to create a new `Link` from a data item `T`:
+As a convenience for our `LinkedList` implementation, we will define a static method to create a new `Link` from a data item `T`:
 
 ```rs
 /// Creates a new Link containing the given data item.
 fn new_link(data: T) -> Link<T> {
-    Some(Rc::new(RefCell::new(Box::new(Node::new(data)))))
+    Some(Rc::new(RefCell::new(Node::new(data))))
 }
 ```
 
@@ -319,7 +318,7 @@ pub fn is_empty(&self) -> bool {
 
 ## Testing
 
-It is good practice to write and use test cases for your code. That way you know if your implementation is behaving as expected and have a head's up if something has broken through changes to your code.
+It is good practice to write and use test cases for your code. That way you know if your implementation is behaving as expected and have a heads-up if something has broken through changes to your code.
 
 Below are some example test methods we can use to check various parts of the functionality of our `LinkedList`. These test methods are by no means exclusive - feel free to write more test cases yourself. You can execute the test methods using the `cargo test` command.
 
@@ -360,8 +359,10 @@ Reach out to me on [LinkedIn][linkedin-url]{:target="_blank"} or [GitHub][github
 ## Errata
 
 - *18 July 2023: I updated the pop() and pop_front() methods discussed in this article to fix a bug highlighted through [community feedback on GitHub][ads-sandbox-issue-5]{:target="_blank"}.*
+- *30 August 2023: I have simplified the definition of the `Link<T>` type. Since `RefCell` is used in the definition of the `Link<T>` type, the usage of `Box` was not strictly required. The GitHub issue referencing this code change be found [here][ads-sandbox-issue-7]{:target="_blank"}.*
 
 [my-source-file]: https://github.com/cmooneycollett/ads-sandbox/blob/e770fa903c896deae60e029d86f756d00a27066a/src/data_structures/linkedlist.rs
 [linkedin-url]: http://www.linkedin.com/comm/mynetwork/discovery-see-all?usecase=PEOPLE_FOLLOWS&followMember=connor-mooney-collett
 [github-url]: https://github.com/cmooneycollett/cmooneycollett.github.io
 [ads-sandbox-issue-5]: https://github.com/cmooneycollett/ads-sandbox/issues/5
+[ads-sandbox-issue-7]: https://github.com/cmooneycollett/ads-sandbox/issues/7
